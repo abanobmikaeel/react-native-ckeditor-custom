@@ -48,35 +48,8 @@ export const CKEditor5 = ({
   placeHolderText,
   onLoadEnd,
 }: CKEditorProps) => {
+  const currentHeight = height ?? 150;
   const webview = useRef(null);
-
-  const [currentHeight, setCurrentHeight] = useState<number>(height ?? 150);
-  // static defaultProps = {
-  //   currentHeight: 150,
-  // }
-
-  // const onError = (error: WebViewProps) => {
-  //   if (this.props.onError) {
-  //     this.props.onError(error);
-  //   } else {
-  //     Alert.alert('WebView onError', error, [
-  //       { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //     ]);
-  //   }
-
-  const onRenderError = (
-    errorDomain: string | undefined,
-    errorCode: number,
-    errorDesc: string
-  ): React.ReactElement<any, string | React.JSXElementConstructor<any>> => {
-    if (renderError) {
-      renderError(errorDomain, errorCode, errorDesc);
-      return <></>;
-    } else {
-      return <Text>Unable to run editor</Text>;
-    }
-  };
-
   const onMessage = (event: WebViewMessageEvent) => {
     const data = event.nativeEvent.data;
 
@@ -187,7 +160,7 @@ export const CKEditor5 = ({
         source={webapp}
         scalesPageToFit={true}
         onError={onError}
-        renderError={onError}
+        renderError={renderError}
         javaScriptEnabled
         onLoadEnd={onLoadEnd}
         onHttpError={onError}
