@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { SafeAreaView } from 'react-native';
 import { Dimensions } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
