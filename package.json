@@ -79,6 +79,10 @@
     "react": "*",
     "react-native": "*"
   },
+  "dependencies": {
+    "prop-types": "^15.8.1",
+    "react-native-webview": "*"
+  },
   "workspaces": [
     "example"
   ],

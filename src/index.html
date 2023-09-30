@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CKEditor</title>
+    <script src="./ckeditor/ckeditor.js"></script>
+    <script>
+      document.addEventListener('message', function (data) {
+        console.log(data.data);
+        editor.setData(data.data);
+      });
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+  </head>
+
+  <body>
+    <textarea name="editor1" id="editor1"></textarea>
+    <script>
+      window.onload = (event) => {
+        ClassicEditor.create(document.querySelector('#editor1'), {})
+          .then((editor) => {
+            window.editor = editor;
+            editor.model.document.on('change:data', () => {
+              try {
+                window.ReactNativeWebView.postMessage(editor.getData());
+              } catch (e) {
+                alert(e);
+              }
+            });
+            editor.editing.view.document.on(
+              'change:isFocused',
+              (evt, name, value) => {
+                console.log('editable isFocused =', value);
+                window.ReactNativeWebView.postMessage(
+                  'RNCKEditor5:onFocus:' + value + editor.getData() + 'asdasd'
+                );
+              }
+            );
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      };
+    </script>
+  </body>
+</html>
