@@ -23,7 +23,7 @@ interface CKEditorProps {
   colors?: any;
   toolbarBorderSize?: string;
   editorFocusBorderSize?: string;
-  placeHolderText?: string;
+  // placeHolderText?: string;
   onLoadEnd?: any;
   injectedJavascript?: string;
 }
@@ -46,7 +46,7 @@ export const CKEditor5 = ({
   colors,
   toolbarBorderSize,
   editorFocusBorderSize,
-  placeHolderText,
+  // placeHolderText,
   onLoadEnd,
   injectedJavascript,
 }: CKEditorProps) => {
@@ -54,7 +54,7 @@ export const CKEditor5 = ({
   const webview = useRef(null);
   const onMessage = (event: WebViewMessageEvent) => {
     const data = event.nativeEvent.data;
-
+    console.log(data);
     if (data.indexOf('RNCKEditor5') === 0) {
       const [_, cmd, value] = data.split(':');
       console.log(cmd, value);
@@ -72,79 +72,88 @@ export const CKEditor5 = ({
   };
 
   const injectedJS = `
-  window.onload = function() {
-    ClassicEditor
-        .create(document.querySelector('#editor1'), ${JSON.stringify(
-          editorConfig
-        )}, ${JSON.stringify(placeHolderText)})
-        .then(editor => {
+     window.onload = function() {
+       ClassicEditor.create( document.querySelector( '#editor1' ), ${JSON.stringify(
+         editorConfig || {}
+       )})
+          .then(editor => {
             window.editor = editor;
+            editor.model.document.on('change:data', () => {
+              try {
+                window.ReactNativeWebView.postMessage(editor.getData(), "*")
+              }
+              catch (e) {
+                alert(e)
+              }
+            });
+            editor.editing.view.document.on(
+              'change:isFocused',
+              (evt, name, value) => {
+                console.log('editable isFocused =', value);
+                window.ReactNativeWebView.postMessage(JSON.stringify(msg));
+                window.ReactNativeWebView.postMessage(
+                  'RNCKEditor5:onFocus:' + value, "*"
+                );
+              }
+            );
+            document.addEventListener("message", function(data) {
+              console.log(data.data);
+              editor.setData(data.data);
+            })
             // Set initial data after editor is ready
-            window.editor.setData(\`${initialData}\`);
-            window.editor.placeHolder(\`${placeHolderText}\`)
-            var style = document.createElement("style");
-            style.type = "text/css";
-            style.innerHTML = \`
-                .ck-editor__editable {
-                    currentHeight: ${currentHeight}px;
-                    max-currentHeight: ${maxHeight || currentHeight}px;
-                }
-                /* Add more CSS rules as needed */
-            \`;
-            document.head.appendChild(style);
-        })
-        .catch(error => {
-            console.error(error);
-        });
-    };
-
-
-    var style = document.createElement("style");
-    style.type = "text/css";
-    style.innerHTML = \`
-    .ck-editor__editable {
-      currentHeight: ${currentHeight}px;
-      max-currentHeight: ${maxHeight || currentHeight}px;
-    }
-    .ck.ck-editor__main > .ck-editor__editable {
-      background: ${colors.backgroundColor};
-      color: ${colors.white};
-      font-family: ${
-        fontFamily || '-apple-system, "Helvetica Neue", "Lucida Grande"'
+            editor.setData(\`${initialData}\`);
+          })
+          .catch(error => {
+              console.error(error);
+          });
       };
-      border-style: '2px solid #007bff';
-    }
-    .ck .ck-toolbar {
-      background: ${colors.offContentBackground ?? 'gray'};
-      border: ${toolbarBorderSize ?? 1};
-      position: -webkit-sticky; /* Safari */
-      position: sticky;
-      top: 0;
-    }
-    .ck.ck-reset_all, .ck.ck-reset_all * {
-      color: ${colors.white}
-    }
-    .ck.ck-editor__editable:not(.ck-editor__nested-editable).ck-focused {
-      border: ${editorFocusBorderSize};
-    }
-    .ck-toolbar .ck-on .ck.ck-icon, .ck-toolbar .ck-on .ck.ck-icon * { 
-      color: ${colors.bg5} !important; 
-    }
-    ${
-      disableTooltips
-        ? `
-    .ck.ck-button .ck.ck-tooltip {
-        display: none;
-    }
-    `
-        : ''
-    }
-    
-    \`
-    
-    document.head.appendChild(style);
-    \`${injectedJavascript}\`
-`;
+
+      var style = document.createElement("style");
+      style.type = "text/css";
+      style.innerHTML = \`
+      .ck-editor__editable {
+        currentHeight: ${currentHeight}px;
+        max-currentHeight: ${maxHeight || currentHeight}px;
+      }
+      .ck.ck-editor__main > .ck-editor__editable {
+        background: ${colors.backgroundColor};
+        color: ${colors.white};
+        font-family: ${
+          fontFamily || '-apple-system, "Helvetica Neue", "Lucida Grande"'
+        };
+        border-style: '2px solid #007bff';
+      }
+      .ck .ck-toolbar {
+        background: ${colors.offContentBackground ?? 'gray'};
+        border: ${toolbarBorderSize ?? 1};
+        position: -webkit-sticky; /* Safari */
+        position: sticky;
+        top: 0;
+      }
+      .ck.ck-reset_all, .ck.ck-reset_all * {
+        color: ${colors.white}
+      }
+      .ck.ck-editor__editable:not(.ck-editor__nested-editable).ck-focused {
+        border: ${editorFocusBorderSize};
+      }
+      .ck-toolbar .ck-on .ck.ck-icon, .ck-toolbar .ck-on .ck.ck-icon * {
+        color: ${colors.bg5} !important;
+      }
+      ${
+        disableTooltips
+          ? `
+      .ck.ck-button .ck.ck-tooltip {
+          display: none;
+      }
+      `
+          : ''
+      }
+
+      \`
+
+      document.head.appendChild(style);
+      \`${injectedJavascript}\`
+  `;
 
   return (
     <SafeAreaView>
@@ -157,6 +166,7 @@ export const CKEditor5 = ({
           overflow: 'hidden',
           ...style,
         }}
+        originWhitelist={['*']}
         scrollEnabled={true}
         source={webapp}
         scalesPageToFit={true}
@@ -171,6 +181,7 @@ export const CKEditor5 = ({
         }
         renderLoading={renderLoading}
         mixedContentMode="always"
+        automaticallyAdjustContentInsets={false}
       />
     </SafeAreaView>
   );

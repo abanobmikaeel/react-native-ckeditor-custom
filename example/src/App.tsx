@@ -12,7 +12,7 @@ export default function App() {
   const toolbarBorderSize = '1px solid #ccc'; // Example toolbar border size and color
   const editorFocusBorderSize = '2px solid #007bff'; // Example editor focus border size and color
   const disableTooltips = false; // Set to true to disable tooltips, false otherwise
-  const placeHolderText = 'Enter your text here'; // Example placeholder text
+  // const placeHolderText = 'Enter your text here'; // Example placeholder text
   const editorConfig = {
     // Additional editor configuration options if needed (provide an empty object or set to null if not needed)
   };
@@ -22,11 +22,11 @@ export default function App() {
   };
 
   const onChange = (e: any) => {
-    // console.log('onChange', e);
+    console.log('onChange', e);
   };
 
   const onError = (e: any) => {
-    // console.log('onError', e);
+    console.log('onError', e);
   };
 
   const onFocus = (e: any) => {
@@ -34,11 +34,11 @@ export default function App() {
   };
 
   const onBlur = (e: any) => {
-    // console.log('onChange', e);
+    console.log('onBlur', e);
   };
 
   const onLoadEnd = (e: any) => {
-    // console.log('onLoadEnd', e);
+    console.log('onLoadEnd', e);
   };
 
   const renderError = () => {
@@ -69,7 +69,7 @@ export default function App() {
         colors={{}}
         toolbarBorderSize={toolbarBorderSize}
         editorFocusBorderSize={editorFocusBorderSize}
-        placeHolderText={placeHolderText}
+        // placeHolderText={placeHolderText}
       />
     </View>
   );
