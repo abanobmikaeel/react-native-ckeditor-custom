@@ -18,6 +18,7 @@ export default function App() {
   };
   const style = {
     backgroundColor: 'black',
+    color: 'black',
   };
 
   const onChange = (e: any) => {

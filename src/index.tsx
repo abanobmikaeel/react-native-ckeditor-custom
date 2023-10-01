@@ -6,25 +6,26 @@ import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 const webapp = require('./index.html');
 
 interface CKEditorProps {
-  onChange: any;
-  onError: any;
-  renderError: any;
-  renderLoading: any;
-  initialData: string;
-  maxHeight: number;
-  editorConfig: any;
-  style: any;
-  onFocus: any;
-  onBlur: any;
+  onChange?: any;
+  onError?: any;
+  renderError?: any;
+  renderLoading?: any;
+  initialData?: string;
+  maxHeight?: number;
+  editorConfig?: any;
+  style?: any;
+  onFocus?: any;
+  onBlur?: any;
   disableTooltips?: boolean;
   height?: number;
   androidHardwareAccelerationDisabled?: boolean;
   fontFamily?: string;
-  colors: any;
+  colors?: any;
   toolbarBorderSize?: string;
   editorFocusBorderSize?: string;
   placeHolderText?: string;
-  onLoadEnd: any;
+  onLoadEnd?: any;
+  injectedJavascript?: string;
 }
 
 export const CKEditor5 = ({
@@ -47,6 +48,7 @@ export const CKEditor5 = ({
   editorFocusBorderSize,
   placeHolderText,
   onLoadEnd,
+  injectedJavascript,
 }: CKEditorProps) => {
   const currentHeight = height ?? 150;
   const webview = useRef(null);
@@ -110,11 +112,11 @@ export const CKEditor5 = ({
       font-family: ${
         fontFamily || '-apple-system, "Helvetica Neue", "Lucida Grande"'
       };
-      border-style: none;
+      border-style: '2px solid #007bff';
     }
     .ck .ck-toolbar {
-      background: ${colors.offContentBackground};
-      border: ${toolbarBorderSize};
+      background: ${colors.offContentBackground ?? 'gray'};
+      border: ${toolbarBorderSize ?? 1};
       position: -webkit-sticky; /* Safari */
       position: sticky;
       top: 0;
@@ -141,9 +143,8 @@ export const CKEditor5 = ({
     \`
     
     document.head.appendChild(style);
+    \`${injectedJavascript}\`
 `;
-
-  // You can now use the injectedCSS variable as the injectedJavascript prop in React Native WebView.
 
   return (
     <SafeAreaView>
