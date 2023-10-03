@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { SafeAreaView } from 'react-native';
-// import SafeAreaView from 'react-native-safe-area-view';
 import { Dimensions } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 
@@ -58,12 +57,14 @@ export const CKEditor5 = ({
   const onMessage = (event: WebViewMessageEvent) => {
     const data = event.nativeEvent.data;
     if (data.indexOf('RNCKEditor5') === 0) {
+      console.log(data);
       const [_, cmd, value] = data.split(':');
+      console.log(cmd);
       switch (cmd) {
         case 'onFocus':
           if (value === 'true' && onFocus) onFocus();
           if (value === 'false' && onBlur) onBlur();
-        // webView.injectJavaScript(
+        // webview?.current?.injectJavaScript(
         //   `document.querySelector( '.ck-editor__editable' ).blur()`
         // );
       }
@@ -72,10 +73,12 @@ export const CKEditor5 = ({
   };
 
   useEffect(() => {
+    const webviewRef = webview.current;
     return () => {
-      if (webview) {
-        webview.current?.injectJavaScript(
-          `(function() {document.removeEventListener('message', handleMessage);})();`
+      if (webviewRef) {
+        webviewRef.injectJavaScript(
+          `element.removeEventListener("cleanupLater", cleanupLater, true);
+          true;`
         );
       }
     };
@@ -96,20 +99,13 @@ export const CKEditor5 = ({
                 alert(e)
               }
             });
-            editor.editing.view.document.on(
-              'change:isFocused',
+            editor.editing.view.document.on('change:isFocused',
               (evt, name, value) => {
-                console.log('editable isFocused =', value);
-                window.ReactNativeWebView.postMessage(JSON.stringify(msg));
                 window.ReactNativeWebView.postMessage(
                   'RNCKEditor5:onFocus:' + value, "*"
                 );
               }
             );
-            document.addEventListener("message", function(data) {
-              editor.setData(data.data);
-            })
-
             // Set initial data after editor is ready
             editor.setData(\`${initialData}\`);
           })
@@ -117,6 +113,11 @@ export const CKEditor5 = ({
               console.error(error);
           });
       };
+      const cleanupLater = (data) => {
+          console.log(data.data);
+          editor.setData(data.data);
+      }
+      document.addEventListener("message", cleanupLater)
 
       var style = document.createElement("style");
       style.type = "text/css";
@@ -158,11 +159,15 @@ export const CKEditor5 = ({
       `
           : ''
       }
-
       \`
-
       document.head.appendChild(style);
-      \`${injectedJavascript}\`
+      \`${injectedJavascript}\`;
+      window.onerror = function(message, sourcefile, lineno, colno, error) {
+        alert("Message: " + message + " - Source: " + sourcefile + " Line: " + lineno + ":" + colno);
+        return true;
+      };
+
+      true;
   `;
 
   return (

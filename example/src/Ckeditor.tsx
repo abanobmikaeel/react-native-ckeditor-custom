@@ -24,7 +24,7 @@ export default function Ckeditor({ route }: any) {
   };
 
   const onChange = (e: any) => {
-    console.log('onChange', e);
+    // console.log('onChange', e);
   };
 
   const onError = (e: any) => {
@@ -40,7 +40,7 @@ export default function Ckeditor({ route }: any) {
   };
 
   const onLoadEnd = (e: any) => {
-    console.log('onLoadEnd', e);
+    // console.log('onLoadEnd', e);
   };
 
   const renderError = () => {
@@ -50,7 +50,6 @@ export default function Ckeditor({ route }: any) {
   const renderLoading = () => {
     return <ActivityIndicator></ActivityIndicator>;
   };
-  console.log('here? ckeditor');
 
   return (
     <View style={styles.container}>
@@ -70,7 +69,7 @@ export default function Ckeditor({ route }: any) {
         height={height}
         androidHardwareAccelerationDisabled={false}
         fontFamily={fontFamily}
-        colors={{}}
+        colors={{ backgroundColors: 'white' }}
         toolbarBorderSize={toolbarBorderSize}
         editorFocusBorderSize={editorFocusBorderSize}
         // placeHolderText={placeHolderText}
