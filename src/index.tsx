@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { SafeAreaView } from 'react-native';
 import { Dimensions } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
@@ -41,7 +41,6 @@ export const CKEditor5 = ({
   onBlur,
   disableTooltips,
   height,
-  androidHardwareAccelerationDisabled,
   fontFamily,
   colors,
   toolbarBorderSize,
@@ -50,15 +49,15 @@ export const CKEditor5 = ({
   onLoadEnd,
   injectedJavascript,
 }: CKEditorProps) => {
+  type WebViewRef = React.RefObject<WebView>;
+
   const currentHeight = height ?? 150;
-  const webview = useRef(null);
+  const webview: WebViewRef = useRef<WebView>(null);
+
   const onMessage = (event: WebViewMessageEvent) => {
     const data = event.nativeEvent.data;
-    console.log(data);
     if (data.indexOf('RNCKEditor5') === 0) {
       const [_, cmd, value] = data.split(':');
-      console.log(cmd, value);
-      console.log(event);
       switch (cmd) {
         case 'onFocus':
           if (value === 'true' && onFocus) onFocus();
@@ -70,6 +69,20 @@ export const CKEditor5 = ({
     }
     onChange(data);
   };
+
+  useEffect(() => {
+    return () => {
+      if (webview) {
+        webview.current?.injectJavaScript(
+          `(function() {
+            var editorElement = document.getElementById('#editor1'); // Replace 'editor' with the ID of your textarea or element
+            editorElement.parentNode.removeChild(editorElement);
+            editor.destroy();
+          })();`
+        );
+      }
+    };
+  }, []);
 
   const injectedJS = `
      window.onload = function() {
@@ -96,10 +109,6 @@ export const CKEditor5 = ({
                 );
               }
             );
-            document.addEventListener("message", function(data) {
-              console.log(data.data);
-              editor.setData(data.data);
-            })
             // Set initial data after editor is ready
             editor.setData(\`${initialData}\`);
           })
@@ -166,7 +175,6 @@ export const CKEditor5 = ({
           overflow: 'hidden',
           ...style,
         }}
-        originWhitelist={['*']}
         scrollEnabled={true}
         source={webapp}
         scalesPageToFit={true}
@@ -176,9 +184,6 @@ export const CKEditor5 = ({
         onLoadEnd={onLoadEnd}
         onHttpError={onError}
         onMessage={onMessage}
-        androidHardwareAccelerationDisabled={
-          androidHardwareAccelerationDisabled
-        }
         renderLoading={renderLoading}
         mixedContentMode="always"
         automaticallyAdjustContentInsets={false}
