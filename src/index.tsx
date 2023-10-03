@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { SafeAreaView } from 'react-native';
+// import SafeAreaView from 'react-native-safe-area-view';
 import { Dimensions } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 
@@ -74,11 +75,7 @@ export const CKEditor5 = ({
     return () => {
       if (webview) {
         webview.current?.injectJavaScript(
-          `(function() {
-            var editorElement = document.getElementById('#editor1'); // Replace 'editor' with the ID of your textarea or element
-            editorElement.parentNode.removeChild(editorElement);
-            editor.destroy();
-          })();`
+          `(function() {document.removeEventListener('message', handleMessage);})();`
         );
       }
     };
@@ -109,6 +106,10 @@ export const CKEditor5 = ({
                 );
               }
             );
+            document.addEventListener("message", function(data) {
+              editor.setData(data.data);
+            })
+
             // Set initial data after editor is ready
             editor.setData(\`${initialData}\`);
           })
