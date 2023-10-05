@@ -1,6 +1,6 @@
 {
   "name": "react-native-ckeditor-custom",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "A react native library to handle custom ckeditors",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

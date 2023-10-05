@@ -180,6 +180,9 @@ export const CKEditor5 = ({
           ...style,
         }}
         originWhitelist={['*']}
+        incognito={true}
+        cacheEnabled={false}
+        cacheMode={'LOAD_NO_CACHE'}
         scrollEnabled={true}
         source={webapp}
         scalesPageToFit={true}
