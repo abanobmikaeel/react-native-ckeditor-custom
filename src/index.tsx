@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { Dimensions } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 
@@ -176,11 +176,10 @@ export const CKEditor5 = ({
         ref={webview}
         injectedJavaScript={injectedJS}
         style={{
-          width: Dimensions.get('screen').width,
-          margin: 5,
-          overflow: 'hidden',
+          ...styles.webview,
           ...style,
         }}
+        originWhitelist={['*']}
         scrollEnabled={true}
         source={webapp}
         scalesPageToFit={true}
@@ -199,3 +198,11 @@ export const CKEditor5 = ({
 };
 
 export default CKEditor5;
+
+const styles = StyleSheet.create({
+  webview: {
+    width: Dimensions.get('screen').width,
+    margin: 5,
+    overflow: 'hidden',
+  }}
+})
