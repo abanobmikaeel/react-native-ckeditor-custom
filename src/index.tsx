@@ -204,5 +204,5 @@ const styles = StyleSheet.create({
     width: Dimensions.get('screen').width,
     margin: 5,
     overflow: 'hidden',
-  }}
-})
+  },
+});
