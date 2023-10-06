@@ -23,7 +23,6 @@ interface CKEditorProps {
   colors?: any;
   toolbarBorderSize?: string;
   editorFocusBorderSize?: string;
-  // placeHolderText?: string;
   onLoadEnd?: any;
   injectedJavascript?: string;
 }
@@ -45,7 +44,6 @@ export const CKEditor5 = ({
   colors,
   toolbarBorderSize,
   editorFocusBorderSize,
-  // placeHolderText,
   onLoadEnd,
   injectedJavascript,
 }: CKEditorProps) => {
@@ -75,6 +73,10 @@ export const CKEditor5 = ({
       if (webviewRef) {
         webviewRef.injectJavaScript(
           `element.removeEventListener("cleanupLater", cleanupLater, true);
+          const editorElement = document.querySelector('#editor1');
+          if (editorElement) {
+            editorElement.parentNode.removeChild(editorElement);
+          }
           true;`
         );
         webviewRef?.stopLoading();
@@ -82,9 +84,6 @@ export const CKEditor5 = ({
     };
   }, []);
 
-  const navigationStateChanged = () => {
-    console.log('state changed');
-  };
   const injectedJS = `
      window.onload = function() {
        ClassicEditor.create( document.querySelector( '#editor1' ), ${JSON.stringify(
@@ -204,7 +203,6 @@ export const CKEditor5 = ({
         onMessage={onMessage}
         renderLoading={renderLoading}
         mixedContentMode="always"
-        onNavigationStateChange={navigationStateChanged}
         automaticallyAdjustContentInsets={false}
       />
     </SafeAreaView>
