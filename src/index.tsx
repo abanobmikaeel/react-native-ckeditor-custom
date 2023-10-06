@@ -73,13 +73,9 @@ export const CKEditor5 = ({
       if (webviewRef) {
         webviewRef.injectJavaScript(
           `element.removeEventListener("cleanupLater", cleanupLater, true);
-          const editorElement = document.querySelector('#editor1');
-          if (editorElement) {
-            editorElement.parentNode.removeChild(editorElement);
-          }
           true;`
         );
-        webviewRef?.stopLoading();
+        // webviewRef?.stopLoading();
       }
     };
   }, []);
@@ -204,6 +200,7 @@ export const CKEditor5 = ({
         renderLoading={renderLoading}
         mixedContentMode="always"
         automaticallyAdjustContentInsets={false}
+        pullToRefreshEnabled={true}
       />
     </SafeAreaView>
   );
