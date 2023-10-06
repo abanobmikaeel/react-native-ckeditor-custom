@@ -64,9 +64,6 @@ export const CKEditor5 = ({
         case 'onFocus':
           if (value === 'true' && onFocus) onFocus();
           if (value === 'false' && onBlur) onBlur();
-        // webview?.current?.injectJavaScript(
-        //   `document.querySelector( '.ck-editor__editable' ).blur()`
-        // );
       }
     }
     onChange(data);
@@ -80,10 +77,14 @@ export const CKEditor5 = ({
           `element.removeEventListener("cleanupLater", cleanupLater, true);
           true;`
         );
+        webviewRef?.stopLoading();
       }
     };
   }, []);
 
+  const navigationStateChanged = () => {
+    console.log('state changed');
+  };
   const injectedJS = `
      window.onload = function() {
        ClassicEditor.create( document.querySelector( '#editor1' ), ${JSON.stringify(
@@ -188,12 +189,22 @@ export const CKEditor5 = ({
         scalesPageToFit={true}
         onError={onError}
         renderError={renderError}
+        onContentProcessDidTerminate={(syntheticEvent) => {
+          const { nativeEvent } = syntheticEvent;
+          console.warn('Content process terminated, reloading', nativeEvent);
+          webview.current?.reload();
+        }}
         javaScriptEnabled
+        allowUniversalAccessFromFileURLs={true}
+        allowFileAccessFromFileURLs={true}
+        allowFileAccess={true}
+        domStorageEnabled={false}
         onLoadEnd={onLoadEnd}
         onHttpError={onError}
         onMessage={onMessage}
         renderLoading={renderLoading}
         mixedContentMode="always"
+        onNavigationStateChange={navigationStateChanged}
         automaticallyAdjustContentInsets={false}
       />
     </SafeAreaView>
